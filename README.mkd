@@ -42,33 +42,34 @@ Collection resources must include the fields 'href', 'total_entries', 'page', 'p
 ## Adapters
 
 It is up to individual adapters to talk to different services, handle auth, etc. An adapter must at least implement 'get' for read-only APIs.
-
-    class SomeAdapter
-      def get(path, options = {})
-        # fetch JSON from remote API, passing pagination options if available
-      end
-    end
+```ruby
+class SomeAdapter
+  def get(path, options = {})
+    # fetch JSON from remote API, passing pagination options if available
+  end
+end
+```
     
 ## Hash adapter
 
 ApiBee ships with an in-memory Hash adapter so it can be use with test/local data (for example a YAML file).
 
-    api = ApiBee.setup(:hash, YAML.load_file('./my_data.yml'))
+```ruby
+api = ApiBee.setup(:hash, YAML.load_file('./my_data.yml'))
     
-    products = api.get('/products') # => ApiBee::Node::List
+products = api.get('/products') # => ApiBee::Node::List
     
-    products.first # => ApiBee::Node::Single
+products.first # => ApiBee::Node::Single
     
-    products.each() # iterate current page
+products.each() # iterate current page
     
-    products.current_page # => 1
+products.current_page # => 1
     
-    products.paginate(:page => 2, :per_page => 4) # => ApiBee::Node::List # Next page
+products.paginate(:page => 2, :per_page => 4) # => ApiBee::Node::List # Next page
     
-    products.has_next_page? # => false
+products.has_next_page? # => false
     
-    products.has_prev_page? # => true
+products.has_prev_page? # => true
     
-    products.prev_page # => 1
-    
-    
+products.prev_page # => 1
+``` 
