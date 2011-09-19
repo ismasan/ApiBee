@@ -3,9 +3,27 @@ require 'spec_helper'
 describe 'ApiBee.setup' do
   
   describe 'with bundled adapter' do
+    
     it 'should return a proxy to instantiated adapter' do
       api = ApiBee.setup(:hash, {})
       api.adapter.should be_kind_of(ApiBee::Adapters::Hash)
+    end
+  end
+  
+  describe 'config block' do
+    
+    it 'should have default uri_property_name field name' do
+      ApiBee.config.uri_property_name.should == :href
+    end
+    
+    it 'should set global variables' do
+      api = ApiBee.setup(:hash, {}) do |config|
+        config.foo = 11
+        config.bar = 22
+      end
+      
+      ApiBee.config.foo.should == 11
+      ApiBee.config.bar.should == 22
     end
   end
   

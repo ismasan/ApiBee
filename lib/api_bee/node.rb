@@ -4,7 +4,7 @@ module ApiBee
     
     def self.resolve(adapter, attrs)
       keys = attrs.keys.map{|k| k.to_sym}
-      if keys.include?(:total_entries) && keys.include?(:href) # is a paginator
+      if keys.include?(:total_entries) && keys.include?(ApiBee.config.uri_property_name) # is a paginator
         List.new adapter, attrs
       else
         Single.new adapter, attrs
@@ -48,11 +48,11 @@ module ApiBee
     end
     
     def has_more?
-      !@complete && @attributes[:href]
+      !@complete && @attributes[ApiBee.config.uri_property_name]
     end
     
     def load_more!
-      more_data = @adapter.get(@attributes[:href])
+      more_data = @adapter.get(@attributes[ApiBee.config.uri_property_name])
       update_attributes more_data if more_data
       @complete = true
     end
@@ -123,7 +123,7 @@ module ApiBee
       end
       
       def paginate(options = {})
-        data = @adapter.get(@attributes[:href], options)
+        data = @adapter.get(@attributes[ApiBee.config.uri_property_name], options)
         Node.resolve @adapter, data
       end
       

@@ -9,7 +9,7 @@ module ApiBee
     end
     
     def get(href)
-      Node.resolve @adapter, :href => href
+      Node.resolve @adapter, ApiBee.config.uri_property_name => href
     end
     
   end
