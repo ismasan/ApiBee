@@ -9,7 +9,8 @@ module ApiBee
     else
       adapter_klass.new *args
     end
-
+    
+    raise NoMethodError, "Adapter must implement #get(path, *args) method" unless adapter.respond_to?(:get)
     Proxy.new adapter
   end
   
