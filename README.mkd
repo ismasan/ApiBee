@@ -42,6 +42,7 @@ Collection resources must include the fields 'href', 'total_entries', 'page', 'p
 ## Adapters
 
 It is up to individual adapters to talk to different services, handle auth, etc. An adapter must at least implement 'get' for read-only APIs.
+
 ```ruby
 class SomeAdapter
   def get(path, options = {})
