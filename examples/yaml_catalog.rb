@@ -4,9 +4,17 @@ require 'api_bee'
 
 api = ApiBee.setup(:hash, YAML.load_file('./catalog.yml'))
 
+collections = api.get('/collections')
+
+#p collections
+
+p collections.current_page
+# p collections.size
+
 collection = api.get('/collections/c1')
 
 p collection[:title]
+p collection[:id]
 
 products = collection[:products]
 
