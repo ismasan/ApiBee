@@ -1,0 +1,61 @@
+:products:
+  :total_entries: 6
+  :href: /products
+  :entries:
+    -
+      :title: P1
+      :id: p1
+      :price: 100
+    -
+      :title: P2
+      :id: p2
+      :price: 200 
+    -
+      :title: P3
+      :id: p3
+      :price: 300
+    -
+      :title: P4
+      :id: p4
+      :price: 400
+    -
+      :title: P5
+      :id: p5
+      :price: 500
+    -
+      :title: P6
+      :id: p6
+      :price: 600
+      
+:collections:
+  :total_entries: 2
+  :href: /collections
+  :entries:
+    -
+      :title: Collection 1
+      :id: c1
+      :products:
+        :total_entries: 2
+        :page: 1
+        :per_page: 1
+        :href: /products
+        :entries:
+          -
+            :href: /products/p1
+          -
+            :href: /products/p2
+            
+    -
+      :title: Collection 2
+      :id: c2
+      :products:
+        :total_entries: 2
+        :page: 1
+        :per_page: 1
+        :href: /products
+        :entries:
+          -
+            :href: /products/p1
+          -
+            :href: /products/p5
+    
