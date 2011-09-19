@@ -3,14 +3,14 @@ $:.push File.expand_path("../lib", __FILE__)
 require "api_bee/version"
 
 Gem::Specification.new do |s|
-  s.name        = "api_bee"
+  s.name        = "API Bee"
   s.version     = ApiBee::VERSION
   s.platform    = Gem::Platform::RUBY
-  s.authors     = ["TODO: Write your name"]
-  s.email       = ["TODO: Write your email address"]
+  s.authors     = ["Ismael Celis"]
+  s.email       = ["ismaelct@gmail.com"]
   s.homepage    = ""
-  s.summary     = %q{TODO: Write a gem summary}
-  s.description = %q{TODO: Write a gem description}
+  s.summary     = %q{Small Ruby client for discoverable, paginated JSON APIs}
+  s.description = %q{API Bee is a small client / spec for a particular style of JSON API. USe Hash adapter for local data access.}
 
   s.rubyforge_project = "api_bee"
 
