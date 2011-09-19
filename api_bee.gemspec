@@ -3,7 +3,7 @@ $:.push File.expand_path("../lib", __FILE__)
 require "api_bee/version"
 
 Gem::Specification.new do |s|
-  s.name        = "API Bee"
+  s.name        = "api_bee"
   s.version     = ApiBee::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Ismael Celis"]
