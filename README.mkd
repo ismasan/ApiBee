@@ -1,0 +1,74 @@
+# API BEE
+
+API Bee is a small client / spec for a particular style of JSON API.
+
+These APIs must
+
+* Expose resource collections as paginated lists, with entries and paging properties.
+* Resource entities in collections must include an 'href' property pointing to the individual resource, so as to provide a degree of discoverability.
+
+A single resource might look like:
+
+    {
+      'name':        'Foo',
+      'description': 'foo resoruce',
+      'href':        'http://api.myservice.com/resources/foo'
+    }
+    
+A resource collection looks like:
+
+    {
+      'href': 'http://api.myservice.com/resources',
+      'total_entries': 100,
+      'page': 1,
+      'per_page': 10,
+      'entries': [
+        {
+          'name':        'Foo',
+          'description': 'foo resoruce',
+          'href':         'http://api.myservice.com/resources/foo'
+        },
+        {
+          'name':        'Bar',
+          'description': 'bar resoruce',
+          'href':        'http://api.myservice.com/resources/bar'
+        },
+        ...
+      ]
+    }
+    
+Collection resources must include the fields 'href', 'total_entries', 'page', 'per_page' and 'entries'. This allows clients to paginate and fetch more pages.
+
+## Adapters
+
+It is up to individual adapters to talk to different services, handle auth, etc. An adapter must at least implement 'get' for read-only APIs.
+
+    class SomeAdapter
+      def get(path, options = {})
+        # fetch JSON from remote API, passing pagination options if available
+      end
+    end
+    
+## Hash adapter
+
+ApiBee ships with an in-memory Hash adapter so it can be use with test/local data (for example a YAML file).
+
+    api = ApiBee.setup(:hash, YAML.load_file('./my_data.yml'))
+    
+    products = api.get('/products') # => ApiBee::Node::List
+    
+    products.first # => ApiBee::Node::Single
+    
+    products.each() # iterate current page
+    
+    products.current_page # => 1
+    
+    products.paginate(:page => 2, :per_page => 4) # => ApiBee::Node::List # Next page
+    
+    products.has_next_page? # => false
+    
+    products.has_prev_page? # => true
+    
+    products.prev_page # => 1
+    
+    
