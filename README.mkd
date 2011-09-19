@@ -84,7 +84,9 @@ The 'href' property in entities will be used to load more data. For example:
 ```ruby
 api = ApiBee.get(:some_adapter)
 
-resource = api.get('/resources').first
+resources = api.get('/resources') # no API call is made
+
+resource = resources.first # call to /resources is made
 
 resource['title'] # => 'Foo bar', title data available
 
