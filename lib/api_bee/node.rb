@@ -4,7 +4,7 @@ module ApiBee
     
     def self.resolve(adapter, attrs)
       keys = attrs.keys.map{|k| k.to_sym}
-      if keys.include?(:total_entries) && keys.include?(:items) # is a paginator
+      if keys.include?(:total_entries) && keys.include?(:href) # is a paginator
         List.new adapter, attrs
       else
         Single.new adapter, attrs
@@ -70,7 +70,7 @@ module ApiBee
       end
       
       def size
-        items.size
+        entries.size
       end
       
       def current_page
@@ -107,25 +107,30 @@ module ApiBee
       end
       
       def first
-        items.first
+        entries.first
       end
       
       def last
-        items.last
+        entries.last
       end
       
       def each(&block)
-        items.each(&block)
+        entries.each(&block)
       end
       
       def each_with_index(&block)
-        items.each_with_index(&block)
+        entries.each_with_index(&block)
+      end
+      
+      def paginate(options = {})
+        data = @adapter.get(@attributes[:href], options)
+        Node.resolve @adapter, data
       end
       
       protected
       
-      def items
-        @items ||= (self[:items] || [])
+      def entries
+        @entries ||= (self[:entries] || [])
       end
 
     end

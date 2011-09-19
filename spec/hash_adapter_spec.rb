@@ -10,12 +10,13 @@ describe ApiBee::Adapters::Hash do
         {
           :title          => 'Catalog',
           :id             => 'catalog',
+          :foos           => [1,2,3,4],
           :products       => {
             :total_entries    => 4,
             :current_page     => 1,
             :per_page         => 2,
             :href             => '/products',
-            :items            => [
+            :entries            => [
               {
                 :id           => 'foo-1',
                 :href         => '/products/foo-1'
@@ -44,17 +45,28 @@ describe ApiBee::Adapters::Hash do
       @collection[:title].should == 'Catalog'
       @collection[:id].should == 'catalog'
     end
+    
+    it 'should find entries in paginated collections' do
+      product = @adapter.get('/collections/catalog/products/foo-2')
+      product[:title].should == 'Foo 2'
+    end
+    
+    it 'should paginate paginated collections' do
+      products = @adapter.get('/collections/catalog/products', :page => 2, :per_page => 1)
+      products[:entries].size.should == 1
+      products[:entries][0][:title].should == 'Foo 2'
+    end
   end
   
   context 'accessing node collections' do
     
     before do
-      @list = @adapter.get('/collections/catalog/products/items')
+      @list = @adapter.get('/collections/catalog/foos')
     end
     
     it 'should return array' do
-      @list.size.should == 2
-      @list[0][:id].should == 'foo-1'
+      @list.size.should == 4
+      @list.should == [1,2,3,4]
     end
   end
   

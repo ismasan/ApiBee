@@ -5,55 +5,60 @@ describe ApiBee do
   before do
     @data = {
       # Products
-      :products         => [
-        {
-          :title        => 'Foo 1',
-          :id           => 'foo-1',
-          :price        => 100,
-          :description  => 'Foo 1 desc'
-        },
-        {
-          :title        => 'Foo 2',
-          :id           => 'foo-2',
-          :price        => 200,
-          :description  => 'Foo 2 desc'
-        },
-        {
-          :title        => 'Foo 3',
-          :id           => 'foo-3',
-          :price        => 300,
-          :description  => 'Foo 3 desc'
-        },
-        {
-          :title        => 'Foo 4',
-          :id           => 'foo-4',
-          :price        => 400,
-          :description  => 'Foo 4 desc'
-        },
-        {
-          :title        => 'Foo 5',
-          :id           => 'foo-5',
-          :price        => 500,
-          :description  => 'Foo 5 desc'
-        },
-        {
-          :title        => 'Foo 6',
-          :id           => 'foo-6',
-          :price        => 600,
-          :description  => 'Foo 6 desc'
-        }
-      ],
+      :products         => {
+        :href => '/products',
+        :total_entries => 6,
+        :entries => [
+          {
+            :title        => 'Foo 1',
+            :id           => 'foo-1',
+            :price        => 100,
+            :description  => 'Foo 1 desc'
+          },
+          {
+            :title        => 'Foo 2',
+            :id           => 'foo-2',
+            :price        => 200,
+            :description  => 'Foo 2 desc'
+          },
+          {
+            :title        => 'Foo 3',
+            :id           => 'foo-3',
+            :price        => 300,
+            :description  => 'Foo 3 desc'
+          },
+          {
+            :title        => 'Foo 4',
+            :id           => 'foo-4',
+            :price        => 400,
+            :description  => 'Foo 4 desc'
+          },
+          {
+            :title        => 'Foo 5',
+            :id           => 'foo-5',
+            :price        => 500,
+            :description  => 'Foo 5 desc'
+          },
+          {
+            :title        => 'Foo 6',
+            :id           => 'foo-6',
+            :price        => 600,
+            :description  => 'Foo 6 desc'
+          }
+        ]
+      },
       # Collections
       :collections        => [
         {
           :title          => 'Catalog',
           :id             => 'catalog',
           :products       => {
+            :href           => '/products',
             :total_entries    => 4,
             :current_page     => 1,
             :per_page         => 2,
             :href             => '/products',
-            :items            => [
+            :entries            => [
               {
                 :id           => 'foo-1',
                 :href         => '/products/foo-1'
@@ -85,7 +90,7 @@ describe ApiBee do
     end
     
     it 'should resolve paginated lists' do
-      node = ApiBee::Node.resolve(@adapter, {:title => 'Blah', :total_entries => 4, :items => []})
+      node = ApiBee::Node.resolve(@adapter, {:title => 'Blah', :total_entries => 4, :href => '/products'})
       node.total_entries.should == 4
       node.adapter.should == @adapter
       node.should be_kind_of(ApiBee::Node::List)
@@ -128,6 +133,9 @@ describe ApiBee do
         @products.pages.should == [1,2]
         @products.has_next_page?.should be_true
         @products.has_prev_page?.should be_false
+      end
+      
+      it 'should iterate the first page' do
         titles = []
         klasses = []
         @products.each {|p| titles << p[:title]}
@@ -136,6 +144,18 @@ describe ApiBee do
         titles.should == ['Foo 1', 'Foo 2']
         @products.first[:title].should == 'Foo 1'
         @products.last[:title].should == 'Foo 2'
+      end
+      
+      it 'should navigate to the second page' do
+        @products = @products.paginate(:page => 2, :per_page => 2)
+        titles = []
+        klasses = []
+        @products.each {|p| titles << p[:title]}
+        @products.each {|p| klasses << p.class}
+        klasses.should == [ApiBee::Node::Single, ApiBee::Node::Single]
+        titles.should == ['Foo 3', 'Foo 4']
+        @products.first[:title].should == 'Foo 3'
+        @products.last[:title].should == 'Foo 4'
       end
       
     end

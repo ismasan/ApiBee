@@ -10,18 +10,14 @@ module ApiBee
         @data = args.last
       end
       
-      def get(href)
+      def get(href, opts = {})
         segments = parse_href(href)
         found = segments.inject(data) do |mem,i|
           case mem
           when ::Hash
-            mem[i.to_sym]
+            handle_hash_data mem, i, opts
           when ::Array
-            if mem[0].kind_of?(::Hash)
-              mem.find {|e| e[:id] == i}
-            else
-              mem
-            end
+            handle_array_data mem, i
           else
             mem
           end
@@ -34,6 +30,39 @@ module ApiBee
       def parse_href(href)
         href.gsub(/^\//, '').split('/')
       end
+      
+      def handle_hash_data(hash, key, opts = {})
+        if is_paginated?(hash) # paginated collection
+          handle_array_data hash[:entries], key
+        else # /products. Might be a paginated list
+          r = hash[key.to_sym]
+          if opts.keys.include?(:page) && opts.keys.include?(:per_page) && r.kind_of?(::Hash) && is_paginated?(r)
+            r[:entries] = paginate(r[:entries], opts[:page], opts[:per_page])
+            r
+          else
+            r
+          end
+        end
+      end
+      
+      def handle_array_data(array, key)
+        if array[0].kind_of?(::Hash)
+          array.find {|e| e[:id] == key}
+        else
+          array
+        end
+      end
+      
+      def is_paginated?(hash)
+        hash[:href] && hash[:total_entries]
+      end
+      
+      def paginate(array, page, per_page)
+        from = page * per_page - per_page
+        to =  page * per_page
+        array[from...to]
+      end
+      
     end
     
   end
