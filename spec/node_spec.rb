@@ -152,6 +152,9 @@ describe ApiBee do
         klasses = []
         @products.each {|p| titles << p[:title]}
         @products.each {|p| klasses << p.class}
+        @products.current_page.should == 2
+        @products.total_entries.should == 6
+        @products.size.should == 2
         klasses.should == [ApiBee::Node::Single, ApiBee::Node::Single]
         titles.should == ['Foo 3', 'Foo 4']
         @products.first[:title].should == 'Foo 3'

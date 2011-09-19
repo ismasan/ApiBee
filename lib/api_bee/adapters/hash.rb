@@ -37,8 +37,7 @@ module ApiBee
         else # /products. Might be a paginated list
           r = hash[key.to_sym]
           if opts.keys.include?(:page) && opts.keys.include?(:per_page) && r.kind_of?(::Hash) && is_paginated?(r)
-            r[:entries] = paginate(r[:entries], opts[:page], opts[:per_page])
-            r
+            paginate(r, opts[:page], opts[:per_page])
           else
             r
           end
@@ -57,10 +56,13 @@ module ApiBee
         hash[:href] && hash[:total_entries]
       end
       
-      def paginate(array, page, per_page)
+      def paginate(list, page, per_page)
         from = page * per_page - per_page
         to =  page * per_page
-        array[from...to]
+        list[:entries] = list[:entries].to_a[from...to]
+        list[:current_page] = page
+        list[:per_page] = per_page
+        list
       end
       
     end

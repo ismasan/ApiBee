@@ -14,8 +14,8 @@ describe ApiBee::Adapters::Hash do
           :products       => {
             :total_entries    => 4,
             :current_page     => 1,
-            :per_page         => 2,
-            :href             => '/products',
+            :per_page         => 4,
+            :href             => '/collections/catalog/products',
             :entries            => [
               {
                 :id           => 'foo-1',
@@ -25,6 +25,16 @@ describe ApiBee::Adapters::Hash do
                 :id           => 'foo-2',
                 :title        => 'Foo 2',
                 :href         => '/products/foo-2'
+              },
+              {
+                :id           => 'foo-3',
+                :title        => 'Foo 3',
+                :href         => '/products/foo-3'
+              },
+              {
+                :id           => 'foo-4',
+                :title        => 'Foo 4',
+                :href         => '/products/foo-4'
               }
             ]
           }
@@ -51,10 +61,23 @@ describe ApiBee::Adapters::Hash do
       product[:title].should == 'Foo 2'
     end
     
+    it 'should return whole collection if no pagination' do
+      products = @adapter.get('/collections/catalog/products')
+      # products.should == 1
+      products[:current_page].should == 1
+      products[:total_entries].should == 4
+      products[:per_page].should == 4
+      products[:entries].size.should == 4
+    end
+    
     it 'should paginate paginated collections' do
-      products = @adapter.get('/collections/catalog/products', :page => 2, :per_page => 1)
-      products[:entries].size.should == 1
-      products[:entries][0][:title].should == 'Foo 2'
+      products = @adapter.get('/collections/catalog/products', :page => 2, :per_page => 2)
+      products[:current_page].should == 2
+      products[:total_entries].should == 4
+      products[:per_page].should == 2
+      products[:entries].size.should == 2
+      products[:entries][0][:title].should == 'Foo 3'
+      products[:entries][1][:title].should == 'Foo 4'
     end
   end
   
