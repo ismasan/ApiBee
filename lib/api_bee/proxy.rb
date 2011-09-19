@@ -19,6 +19,10 @@ module ApiBee
       _node[key]
     end
     
+    def to_data
+      _node.to_data
+    end
+    
     protected
     
     def method_missing(method_name, *args)

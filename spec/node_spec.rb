@@ -132,6 +132,14 @@ describe ApiBee do
       end
     end
     
+    describe '#to_data' do
+      it 'should return raw data' do
+        d = @api.get('/collections/catalog').to_data
+        d.should be_kind_of(::Hash)
+        d.should == @data[:collections].first
+      end
+    end
+    
     describe 'paginated lists' do
       before do
         @collection = @api.get('/collections/catalog')

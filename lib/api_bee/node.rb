@@ -27,6 +27,10 @@ module ApiBee
       update_attributes attrs
     end
     
+    def to_data
+      @attributes
+    end
+    
     def [](attribute_name)
       if respond_to?(attribute_name)
         send attribute_name
