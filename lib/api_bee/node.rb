@@ -20,7 +20,9 @@ module ApiBee
     end
     
     def [](attribute_name)
-      if value = @attributes[attribute_name]
+      if respond_to?(attribute_name)
+        send attribute_name
+      elsif value = @attributes[attribute_name]
         resolve_values_to_nodes value
       elsif has_more? # check whether there's more info in API
         load_more!
@@ -70,7 +72,7 @@ module ApiBee
       end
       
       def size
-        entries.size
+        __entries.size
       end
       
       def current_page
@@ -107,19 +109,19 @@ module ApiBee
       end
       
       def first
-        entries.first
+        __entries.first
       end
       
       def last
-        entries.last
+        __entries.last
       end
       
       def each(&block)
-        entries.each(&block)
+        __entries.each(&block)
       end
       
       def each_with_index(&block)
-        entries.each_with_index(&block)
+        __entries.each_with_index(&block)
       end
       
       def paginate(options = {})
@@ -129,7 +131,7 @@ module ApiBee
       
       protected
       
-      def entries
+      def __entries
         @entries ||= (self[:entries] || [])
       end
 

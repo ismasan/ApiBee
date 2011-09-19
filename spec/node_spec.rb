@@ -112,7 +112,7 @@ describe ApiBee do
     describe 'single nodes' do
       it 'should call adapter only when accessing needed attributes' do
         hash = @data[:collections].last
-        @adapter.should_receive(:get).exactly(1).times.with('/collections/catalog').and_return hash
+        @adapter.should_receive(:get).exactly(1).times.with('/collections/catalog', {}).and_return hash
         node = @api.get('/collections/catalog')
         node[:title].should == 'Catalog'
         node[:id].should == 'catalog'
