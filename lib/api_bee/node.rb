@@ -2,7 +2,15 @@ module ApiBee
   
   class Node
     
+    def self.simbolized(hash)
+      hash.inject({}) do |options, (key, value)|
+        options[(key.to_sym rescue key) || key] = value
+        options
+      end
+    end
+    
     def self.resolve(adapter, attrs)
+      attrs = simbolized(attrs)
       keys = attrs.keys.map{|k| k.to_sym}
       if keys.include?(:total_entries) && keys.include?(ApiBee.config.uri_property_name) # is a paginator
         List.new adapter, attrs

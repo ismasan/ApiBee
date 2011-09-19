@@ -89,6 +89,19 @@ describe ApiBee do
       node.should be_kind_of(ApiBee::Node::Single)
     end
     
+    it 'should symbolize hash keys' do
+      node = ApiBee::Node.resolve(@adapter, {
+        'title' => 'Blah', 
+        'total_entries' => 4, 
+        'href' => '/products',
+        'foos' => [1,2,3,4]
+      })
+      node.total_entries.should == 4
+      node[:foos].should == [1,2,3,4]
+      node.adapter.should == @adapter
+      node.should be_kind_of(ApiBee::Node::List)
+    end
+    
     it 'should resolve paginated lists' do
       node = ApiBee::Node.resolve(@adapter, {:title => 'Blah', :total_entries => 4, :href => '/products'})
       node.total_entries.should == 4
