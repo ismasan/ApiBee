@@ -44,12 +44,53 @@ Collection resources must include the fields 'href', 'total_entries', 'page', 'p
 It is up to individual adapters to talk to different services, handle auth, etc. An adapter must at least implement 'get' for read-only APIs.
 
 ```ruby
-class SomeAdapter
+class ApiBee::Adapters::Special
   def get(path, options = {})
     # fetch JSON from remote API, passing pagination options if available
   end
 end
 ```
+
+The use it:
+
+```ruby
+api = ApiBee.setup :special, optional_custom_data
+
+api.get('/my/resources').each do |r|
+  r[:name]
+end
+```
+
+## Lazy loading
+
+ApiBee wraps your adapters in lazy-loading objects. API calls will only be issued when accessing or iterating data.
+
+The 'href' property in entities will be used to load more data. For example:
+
+    # /resources
+    [
+      {
+        'title': 'Foo bar',
+        'href': '/resources/foo-bar'
+      }
+    ]
+    
+    # /resources/foo-bar
+    {
+      'title': 'Foo bar',
+      'description': 'Foo description'
+    }
+    
+```ruby
+api = ApiBee.get(:some_adapter)
+
+resource = api.get('/resources').first
+
+resource['title'] # => 'Foo bar', title data available
+
+resource['description'] # => 'Foo description'. Makes internal new request to /resources/foo-bar
+```
+    
     
 ## Hash adapter
 
