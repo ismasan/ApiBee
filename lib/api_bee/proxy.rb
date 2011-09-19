@@ -19,6 +19,8 @@ module ApiBee
       _node[key]
     end
     
+    protected
+    
     def method_missing(method_name, *args)
       if args.empty?
         _node[method_name]
@@ -26,8 +28,6 @@ module ApiBee
         @adapter.send(method_name, *args)
       end
     end
-    
-    protected
     
     def _node
       @node ||= (
