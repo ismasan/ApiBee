@@ -25,12 +25,8 @@ module ApiBee
     
     protected
     
-    def method_missing(method_name, *args)
-      if args.empty?
-        _node[method_name]
-      else
-        @adapter.send(method_name, *args)
-      end
+    def method_missing(method_name, *args, &block)
+      _node.send(method_name, *args, &block)
     end
     
     def _node
