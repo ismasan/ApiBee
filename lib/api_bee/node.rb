@@ -96,7 +96,7 @@ module ApiBee
       end
       
       def total_pages
-        div = total_entries / per_page
+        div = (total_entries.to_f / per_page).ceil
         div < 1 ? 1 : div
       end
       
