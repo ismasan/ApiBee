@@ -67,7 +67,7 @@ module ApiBee
     
     def load_more!
       more_data = @adapter.get(@attributes[ApiBee.config.uri_property_name])
-      update_attributes more_data if more_data
+      update_attributes Node.simbolized(more_data) if more_data
       @complete = true
     end
     
