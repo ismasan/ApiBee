@@ -23,6 +23,11 @@ module ApiBee
       _node.to_data
     end
     
+    def paginate(*args)
+      @list ||= Node::List.new(@adapter, {ApiBee.config.uri_property_name => @href}, @href)
+      @list.paginate *args
+    end
+    
     protected
     
     def method_missing(method_name, *args, &block)
@@ -32,7 +37,7 @@ module ApiBee
     def _node
       @node ||= (
         data = @adapter.get(@href, @opts)
-        Node.resolve @adapter, data
+        Node.resolve @adapter, data, @href
       )
     end
     

@@ -156,21 +156,24 @@ describe ApiBee do
     
     describe 'paginated root level lists' do
       
+      before do
+        @products = @api.get('/products', :page => 1, :per_page => 2)
+      end
+      
       it 'should have a paginator interface' do
-        products = @api.get('/products', :page => 1, :per_page => 2)
         
-        products.total_entries.should == 7
-        products.size.should == 2
-        products.total_pages.should == 4
-        products.current_page.should == 1
-        products.pages.should == [1,2,3,4]
-        products.has_next_page?.should be_true
-        products.has_prev_page?.should be_false
+        @products.total_entries.should == 7
+        @products.size.should == 2
+        @products.total_pages.should == 4
+        @products.current_page.should == 1
+        @products.pages.should == [1,2,3,4]
+        @products.has_next_page?.should be_true
+        @products.has_prev_page?.should be_false
       end
       
       it 'should paginate last page correctly' do
-        last_page = @api.get('/products', :per_page => 2, :page =>4)
-        
+        last_page = @products.paginate(:per_page => 2, :page =>4)
+
         last_page.total_entries.should == 7
         last_page.size.should == 1
         last_page.total_pages.should == 4
