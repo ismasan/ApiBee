@@ -55,7 +55,7 @@ describe ApiBee do
           :products       => {
             :href           => '/products',
             :total_entries    => 4,
-            :current_page     => 1,
+            :page             => 1,
             :per_page         => 2,
             :href             => '/products',
             :entries            => [

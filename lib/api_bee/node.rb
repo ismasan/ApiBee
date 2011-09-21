@@ -88,7 +88,7 @@ module ApiBee
       end
       
       def current_page
-        (@attributes[:current_page] || 1).to_i
+        (@attributes[:page] || 1).to_i
       end
       
       def per_page

@@ -13,7 +13,7 @@ describe ApiBee::Adapters::Hash do
           :foos           => [1,2,3,4],
           :products       => {
             :total_entries    => 4,
-            :current_page     => 1,
+            :page     => 1,
             :per_page         => 4,
             :href             => '/collections/catalog/products',
             :entries            => [
@@ -64,7 +64,7 @@ describe ApiBee::Adapters::Hash do
     it 'should return whole collection if no pagination' do
       products = @adapter.get('/collections/catalog/products')
       # products.should == 1
-      products[:current_page].should == 1
+      products[:page].should == 1
       products[:total_entries].should == 4
       products[:per_page].should == 4
       products[:entries].size.should == 4
@@ -72,7 +72,7 @@ describe ApiBee::Adapters::Hash do
     
     it 'should paginate paginated collections' do
       products = @adapter.get('/collections/catalog/products', :page => 2, :per_page => 2)
-      products[:current_page].should == 2
+      products[:page].should == 2
       products[:total_entries].should == 4
       products[:per_page].should == 2
       products[:entries].size.should == 2

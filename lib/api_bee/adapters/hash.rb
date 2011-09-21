@@ -60,7 +60,7 @@ module ApiBee
         from = page * per_page - per_page
         to =  page * per_page
         list[:entries] = list[:entries].to_a[from...to]
-        list[:current_page] = page
+        list[:page] = page
         list[:per_page] = per_page
         list
       end
