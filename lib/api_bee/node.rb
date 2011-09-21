@@ -12,7 +12,7 @@ module ApiBee
     def self.resolve(adapter, attrs, href = nil)
       attrs = simbolized(attrs)
       keys = attrs.keys.map{|k| k.to_sym}
-      if keys.include?(:total_entries) && keys.include?(ApiBee.config.uri_property_name) # is a paginator
+      if keys.include?(:total_entries) && keys.include?(ApiBee.config.uri_property_name.to_sym) # is a paginator
         List.new adapter, attrs, href
       else
         Single.new adapter, attrs, href
@@ -102,7 +102,7 @@ module ApiBee
       end
       
       def total_pages
-        div = (total_entries.to_f / per_page).ceil
+        div = (total_entries.to_f / per_page.to_f).ceil
         div < 1 ? 1 : div
       end
       
