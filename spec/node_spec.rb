@@ -138,6 +138,29 @@ describe ApiBee do
       end
     end
     
+    describe '#find_one' do
+      
+      before do
+        @products = @api.get('/products', :page => 1, :per_page => 2)
+      end
+      
+      it 'should delegate to adapter. It knows how to find individual resoruces' do
+        @adapter.should_receive(:find_one).with('/products', 'foo-1')
+        @products.find_one('foo-1')
+      end
+      
+      it 'should return a Node::Single' do
+        node = @products.find_one('foo-1')
+        node.should be_kind_of(ApiBee::Node::Single)
+        node[:title].should == 'Foo 1'
+      end
+      
+      it 'should return nil if not found' do
+        @products.find_one('foo-1000').should be_nil
+      end
+      
+    end
+    
   end
   
   context 'navigating data' do
@@ -227,6 +250,7 @@ describe ApiBee do
       end
       
     end
+    
   end
   
 end

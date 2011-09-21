@@ -50,6 +50,12 @@ describe ApiBee::Adapters::Hash do
     @adapter        = ApiBee::Adapters::Hash.new(@data)
   end
   
+  context 'non-existing data' do
+    it 'should return nil' do
+      @adapter.get('/foo/lolz').should be_nil
+    end
+  end
+  
   context 'accessing single nodes' do
     
     before do

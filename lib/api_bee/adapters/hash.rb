@@ -25,6 +25,10 @@ module ApiBee
         found
       end
       
+      def find_one(href, id)
+        get("#{href}/#{id}")
+      end
+      
       protected
       
       def parse_href(href)
