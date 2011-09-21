@@ -12,7 +12,7 @@ describe ApiBee::Adapters::Hash do
           :id             => 'catalog',
           :foos           => [1,2,3,4],
           :products       => {
-            :total_entries    => 4,
+            :total_entries    => 5,
             :page     => 1,
             :per_page         => 4,
             :href             => '/collections/catalog/products',
@@ -35,7 +35,12 @@ describe ApiBee::Adapters::Hash do
                 :id           => 'foo-4',
                 :title        => 'Foo 4',
                 :href         => '/products/foo-4'
-              }
+              },
+               {
+                 :id           => 'foo-5',
+                 :title        => 'Foo 5',
+                 :href         => '/products/foo-5'
+               }
             ]
           }
         }
@@ -65,19 +70,30 @@ describe ApiBee::Adapters::Hash do
       products = @adapter.get('/collections/catalog/products')
       # products.should == 1
       products[:page].should == 1
-      products[:total_entries].should == 4
+      products[:total_entries].should == 5
       products[:per_page].should == 4
-      products[:entries].size.should == 4
+      products[:entries].size.should == 5
     end
     
-    it 'should paginate paginated collections' do
-      products = @adapter.get('/collections/catalog/products', :page => 2, :per_page => 2)
-      products[:page].should == 2
-      products[:total_entries].should == 4
-      products[:per_page].should == 2
-      products[:entries].size.should == 2
-      products[:entries][0][:title].should == 'Foo 3'
-      products[:entries][1][:title].should == 'Foo 4'
+    describe 'paginating' do
+      it 'should paginate paginated collections' do
+        products = @adapter.get('/collections/catalog/products', :page => 2, :per_page => 2)
+        products[:page].should == 2
+        products[:total_entries].should == 5
+        products[:per_page].should == 2
+        products[:entries].size.should == 2
+        products[:entries][0][:title].should == 'Foo 3'
+        products[:entries][1][:title].should == 'Foo 4'
+      end
+      
+      it 'should paginate last page correctly' do
+        products = @adapter.get('/collections/catalog/products', :page => 3, :per_page => 2)
+        products[:page].should == 3
+        products[:total_entries].should == 5
+        products[:per_page].should == 2
+        products[:entries].size.should == 1
+        products[:entries][0][:title].should == 'Foo 5'
+      end
     end
   end
   

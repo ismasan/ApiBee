@@ -7,7 +7,7 @@ describe ApiBee do
       # Products
       :products         => {
         :href => '/products',
-        :total_entries => 6,
+        :total_entries => 7,
         :entries => [
           {
             :title        => 'Foo 1',
@@ -44,6 +44,12 @@ describe ApiBee do
             :id           => 'foo-6',
             :price        => 600,
             :description  => 'Foo 6 desc'
+          },
+          {
+            :title        => 'Foo 7',
+            :id           => 'foo-7',
+            :price        => 700,
+            :description  => 'Foo 7 desc'
           }
         ]
       },
@@ -132,6 +138,14 @@ describe ApiBee do
       end
     end
     
+  end
+  
+  context 'navigating data' do
+    
+    before do
+      @api = ApiBee.setup(:hash, @data)
+    end
+    
     describe '#to_data' do
       it 'should return raw data' do
         d = @api.get('/collections/catalog').to_data
@@ -140,7 +154,34 @@ describe ApiBee do
       end
     end
     
-    describe 'paginated lists' do
+    describe 'paginated root level lists' do
+      
+      it 'should have a paginator interface' do
+        products = @api.get('/products', :page => 1, :per_page => 2)
+        
+        products.total_entries.should == 7
+        products.size.should == 2
+        products.total_pages.should == 4
+        products.current_page.should == 1
+        products.pages.should == [1,2,3,4]
+        products.has_next_page?.should be_true
+        products.has_prev_page?.should be_false
+      end
+      
+      it 'should paginate last page correctly' do
+        last_page = @api.get('/products', :per_page => 2, :page =>4)
+        
+        last_page.total_entries.should == 7
+        last_page.size.should == 1
+        last_page.total_pages.should == 4
+        last_page.current_page.should == 4
+        last_page.pages.should == [1,2,3,4]
+        last_page.has_next_page?.should be_false
+        last_page.has_prev_page?.should be_true
+      end
+    end
+    
+    describe 'paginated nested lists' do
       before do
         @collection = @api.get('/collections/catalog')
         @products = @collection[:products]
@@ -174,7 +215,7 @@ describe ApiBee do
         @products.each {|p| titles << p[:title]}
         @products.each {|p| klasses << p.class}
         @products.current_page.should == 2
-        @products.total_entries.should == 6
+        @products.total_entries.should == 7
         @products.size.should == 2
         klasses.should == [ApiBee::Node::Single, ApiBee::Node::Single]
         titles.should == ['Foo 3', 'Foo 4']
@@ -183,7 +224,6 @@ describe ApiBee do
       end
       
     end
-    
   end
   
 end
