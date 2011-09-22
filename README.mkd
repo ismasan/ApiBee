@@ -132,15 +132,17 @@ ismael[:last_name'] #=> request made to http://api.com/users/ismael
 
 Lazy-loading and paginating resources is great for GET requests, but you might want to still use your adapter's other methods.
 
-    api = ApiBee.setup(MyCustomAdapter) do |config|
-      config.expose :delete, :post
-    end
-    
-    # This still wraps your adapter's get() method and adds lazy-loading and pagination
-    api.get('/products').first[:title]
-    
-    # This delegates directory to MyCustomAdapter#post()
-    api.post('/products', :title => 'Foo', :price => 100.0)
+```ruby
+api = ApiBee.setup(MyCustomAdapter) do |config|
+  config.expose :delete, :post
+end
+
+# This still wraps your adapter's get() method and adds lazy-loading and pagination
+api.get('/products').first[:title]
+
+# This delegates directory to MyCustomAdapter#post()
+api.post('/products', :title => 'Foo', :price => 100.0)
+```
 
 ## finding a single resource
 
