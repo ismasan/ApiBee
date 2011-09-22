@@ -12,7 +12,7 @@ module ApiBee
       
       def get(href, opts = {})
         segments = parse_href(href)
-        found = segments.inject(data) do |mem,i|
+        segments.inject(data) do |mem,i|
           case mem
           when ::Hash
             handle_hash_data mem, i, opts
@@ -22,7 +22,6 @@ module ApiBee
             mem
           end
         end
-        found
       end
       
       def get_one(href, id)
