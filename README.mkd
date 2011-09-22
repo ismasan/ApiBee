@@ -51,7 +51,7 @@ class ApiBee::Adapters::Special
 end
 ```
 
-The use it:
+Then use it:
 
 ```ruby
 api = ApiBee.setup :special, optional_custom_data
