@@ -2,7 +2,6 @@ require 'ostruct'
 module ApiBee
   
   class << ApiBee
-    attr_reader :config
     
     def setup(adapter_klass, *args)
       
