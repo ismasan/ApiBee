@@ -190,4 +190,4 @@ products.prev_page # => 1
 
 ## Examples
 
-See examples/github_api.rb for an adapter that paginates Github's API by decorating it's results with ApiBee's required pagination properties
+See [examples/github_api.rb](https://github.com/ismasan/ApiBee/blob/master/examples/github_api.rb) for an adapter that paginates Github's API by decorating it's results with ApiBee's required pagination properties
