@@ -79,12 +79,14 @@ If an object in a response has a 'href' attribute, it will be used to fetch more
       }
     }
     
-    # Instantiate object
-    user = api.get('/user')
-    # No extra request made
-    user[:name]
-    # Extra request to http://api.com/users/ismael to fetch more user data
-    user[:last_name]
+```ruby
+# Instantiate object
+user = api.get('/user')
+# No extra request made
+user[:name]
+# Extra request to http://api.com/users/ismael to fetch more user data
+user[:last_name]
+```
     
 This works for objects in collections too.
 
@@ -108,20 +110,22 @@ This works for objects in collections too.
       }
     }
     
-    # Instantiate collection
-    users = api.get('/users') # no request yet
-    
-    users.total_entries # => 100 # request made
-    users.size # => 2, current page
-    users.each ... # iterate current page
-    users.current_page # => 1
-    users.has_next_page? # => true
-    users.next_page # => 2
-    
-    # Access entry. No request made
-    ismael = users.first
-    ismael[:name] # => 'ismael'
-    ismael[:last_name'] #=> request made to http://api.com/users/ismael
+```ruby
+# Instantiate collection
+users = api.get('/users') # no request yet
+
+users.total_entries # => 100 # request made
+users.size # => 2, current page
+users.each ... # iterate current page
+users.current_page # => 1
+users.has_next_page? # => true
+users.next_page # => 2
+
+# Access entry. No request made
+ismael = users.first
+ismael[:name] # => 'ismael'
+ismael[:last_name'] #=> request made to http://api.com/users/ismael
+```
 
 
 ## Delegate to adapter
