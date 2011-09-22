@@ -41,7 +41,7 @@ class GithubAdapter
     
   end
   
-  def find_one(href, id)
+  def get_one(href, id)
     get id
   end
   
@@ -109,7 +109,7 @@ show repos, 1
 puts "First created at is: #{repos.first[:created_at]}"
 
 # Fetch a single node 
-one = repos.find_one('https://api.github.com/repos/ismasan/websockets_examples')
+one = repos.get_one('https://api.github.com/repos/ismasan/websockets_examples')
 
 # one[:owner][:public_repos] will trigger a new request to the resource URL because that property is not available in the excerpt
 #

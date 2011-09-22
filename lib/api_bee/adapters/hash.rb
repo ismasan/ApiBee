@@ -25,7 +25,7 @@ module ApiBee
         found
       end
       
-      def find_one(href, id)
+      def get_one(href, id)
         get("#{href}/#{id}")
       end
       

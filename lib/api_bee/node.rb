@@ -81,8 +81,8 @@ module ApiBee
       
       DEFAULT_PER_PAGE = 100
       
-      def find_one(id)
-        data = @adapter.find_one(@href, id)
+      def get_one(id)
+        data = @adapter.get_one(@href, id)
         data.nil? ? nil : Node.resolve(@adapter, @config, data, @href)
       end
       
