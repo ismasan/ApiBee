@@ -29,10 +29,22 @@ module ApiBee
       @list.paginate *args
     end
     
+    def ==(other)
+      _node.to_data
+    end
+    
     protected
     
     def method_missing(method_name, *args, &block)
-      _node.send(method_name, *args, &block)
+      if _adapter_delegators.include?(method_name)
+        @adapter.send(method_name, *args, &block)
+      else
+        _node.send(method_name, *args, &block)
+      end
+    end
+    
+    def _adapter_delegators
+      @adapter_delegators ||= @config.adapter_delegators || []
     end
     
     def _node

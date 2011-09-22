@@ -93,6 +93,43 @@ describe 'ApiBee.setup' do
       end
 
     end
+    
+    describe 'delegate to adapter' do
+      
+      before do
+        
+        adapter = Class.new(ApiBee::Adapters::Hash) do
+          def fetch(*args)
+            @data.fetch *args
+          end
+          
+          def keys(*args)
+            @data.keys *args
+          end
+        end
+        
+        @api = ApiBee.setup(adapter, {
+          :a => {:name => 1},
+          :b => {:name => 2}
+        }) do |config|
+          config.expose :fetch, :keys
+        end
+        
+      end
+      
+      it 'should still work' do
+        @api.get('/a').should == {:name => 1}
+        @api.get('/b').should == {:name => 2}
+      end
+      
+      it 'should delegate configured methods on to adapter' do
+        @api.fetch(:a).should == {:name => 1}
+        @api.fetch(:x, 'X').should == 'X'
+        
+        @api.keys.should == [:a, :b]
+      end
+      
+    end
   end
   
 end

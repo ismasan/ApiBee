@@ -23,7 +23,7 @@ module ApiBee
     
     # new config object with defaults
     def new_config
-      OpenStruct.new(
+      Config.new(
         # This field is expected in API responses
         # and should point to an individual resource with more data
         :uri_property_name            => :href,
@@ -34,6 +34,14 @@ module ApiBee
         # that contains cureent page's entries
         :entries_property_name        => :entries
       )
+    end
+    
+    class Config < OpenStruct
+      
+      def expose(*fields)
+        self.adapter_delegators = fields
+      end
+      
     end
     
   end
