@@ -8,9 +8,9 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Ismael Celis"]
   s.email       = ["ismaelct@gmail.com"]
-  s.homepage    = ""
-  s.summary     = %q{Small Ruby client for discoverable, paginated JSON APIs}
-  s.description = %q{API Bee is a small client / spec for a particular style of JSON API. USe Hash adapter for local data access.}
+  s.homepage    = "https://github.com/ismasan/ApiBee"
+  s.description     = %q{Small Ruby client for discoverable, paginated JSON APIs}
+  s.summary = %q{API Bee is a small client / spec for a particular style of JSON API. Use Hash adapter for local data access.}
 
   s.rubyforge_project = "api_bee"
 
