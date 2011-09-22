@@ -148,8 +148,10 @@ api.post('/products', :title => 'Foo', :price => 100.0)
 
 There's a special get_one method that you can call on lists. It delegates to the adapter and it's useful for finding a single resource in the context of a paginated list.
 
-    resources = api.get('/my/resources')
-    resource = resources.get_one('foobar')
+```ruby
+resources = api.get('/my/resources')
+resource = resources.get_one('foobar')
+```
     
 That delegates to Adapter#get_one passing 2 arguments: the list's href and the passed name or identifier, so:
 
