@@ -1,10 +1,12 @@
 $LOAD_PATH.unshift '../lib'
 require 'api_bee'
-#require 'net/http'
 require 'net/https'
 require 'uri'
 require 'json'
 
+# Github adapter wraps raw Github API response and decorates collections with
+# pagination parameters needed by APIBee
+#
 class GithubAdapter
   
   def initialize
@@ -16,8 +18,6 @@ class GithubAdapter
   end
   
   def get(path, options = {})
-    per_page = (options[:per_page] || 20).to_i
-    page = (options[:page] || 1).to_i
     
     q = options.map{|k,v| "#{k}=#{v}"}.join('&')
     
@@ -28,21 +28,9 @@ class GithubAdapter
     
     if response.kind_of?(Net::HTTPOK)
       results = JSON.parse response.body
-      if results.is_a?(Array)
+      results = if results.is_a?(Array)
         # decorate returned array so it complies with APiBee's pagination params
-        results = {
-          :entries => results,
-          :page => page,
-          :per_page => per_page,
-          :url => path
-        }
-        # Extract last page number and entries count. Github uses a 'Link' header
-        if link = response["link"]
-          last_page = extract_last_page(link) || page # if no 'last' link, we're on the last page
-          results.update(
-            :total_entries => last_page.to_i * per_page
-          )
-        end
+        paginate results, options, path, response
       else
         results
       end
@@ -60,6 +48,26 @@ class GithubAdapter
   
   protected
   
+  def paginate(results, options, path, response)
+    per_page = (options[:per_page] || 20).to_i
+    page = (options[:page] || 1).to_i
+    
+    results = {
+      :entries => results,
+      :page => page,
+      :per_page => per_page,
+      :url => path
+    }
+    # Extract last page number and entries count. Github uses a 'Link' header
+    if link = response["link"]
+      last_page = extract_last_page(link) || page # if no 'last' link, we're on the last page
+      results.update(
+        :total_entries => last_page.to_i * per_page
+      )
+    end
+    results
+  end
+  
   def extract_last_page(link)
     aa = link.split('<https')
     last_link = aa.find{|e| e=~ /rel="last"/}
@@ -69,12 +77,15 @@ class GithubAdapter
   
 end
 
+########### USAGE ##################################
+
 ## Instantiate your wrapped API
 
 api = ApiBee.setup(GithubAdapter)
 
 repos = api.get('/users/ismasan/repos')
 
+# Recursive method prints results for each page
 def show(data, c)
   puts "+++++++++++++++ Page #{data.current_page} of #{data.total_pages} (#{data.total_entries} entries). #{data.size} now. ++++++++"
   puts
