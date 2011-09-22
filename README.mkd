@@ -67,7 +67,7 @@ resources.each do |r|
 end
 ```
 
-## Lazy-loading of attributes
+## Lazy-loading
 
 If an object in a response has a 'href' attribute, it will be used to fetch more data if you ask for an attribute currently not in the object.
 
@@ -158,40 +158,7 @@ class ApiBee::Adapters::Special
     get "#{href}/#{id}"
   end
 end
-```
-
-## Lazy loading
-
-ApiBee wraps your adapters in lazy-loading objects. API calls will only be issued when accessing or iterating data.
-
-The 'href' property in entities will be used to load more data. For example:
-
-    # /resources
-    [
-      {
-        'title': 'Foo bar',
-        'href': '/resources/foo-bar'
-      }
-    ]
-    
-    # /resources/foo-bar
-    {
-      'title': 'Foo bar',
-      'description': 'Foo description'
-    }
-    
-```ruby
-api = ApiBee.get(:some_adapter)
-
-resources = api.get('/resources') # no API call is made
-
-resource = resources.first # call to /resources is made
-
-resource['title'] # => 'Foo bar', title data available
-
-resource['description'] # => 'Foo description'. Makes internal new request to /resources/foo-bar
-```
-    
+``` 
     
 ## Hash adapter
 
