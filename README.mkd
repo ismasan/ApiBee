@@ -51,15 +51,78 @@ class ApiBee::Adapters::Special
 end
 ```
 
-Then use it:
+ApiBee wraps your adapter and makes results lazily-loaded. That is, actual requests won't be made until accessing attributes or iterating the data set.
+
+Use it:
 
 ```ruby
 api = ApiBee.setup :special, optional_custom_data
 
-api.get('/my/resources').each do |r|
+# No actual request made
+resources = api.get('/my/resources')
+
+# Requests once under the hood so you can iterate
+resources.each do |r|
   r[:name]
 end
 ```
+
+## Lazy-loading of attributes
+
+If an object in a response has a 'href' attribute, it will be used to fetch more data if you ask for an attribute currently not in the object.
+
+    # JSON Dataset
+    {
+      'user': {
+        'name': 'Ismael',
+        'href': 'http://api.com/users/ismael'
+      }
+    }
+    
+    # Instantiate object
+    user = api.get('/user')
+    # No extra request made
+    user[:name]
+    # Extra request to http://api.com/users/ismael to fetch more user data
+    user[:last_name]
+    
+This works for objects in collections too.
+
+    # JSON collection
+    {
+      'users': {
+        'total_entries': 100,
+        'page': 1,
+        'per_page': 2,
+        'href': 'http://api.com/users',
+        'entries': [
+          {
+            'name': 'Ismael',
+            'href': 'http://api.com/users/ismael'
+          },
+          {
+            'name': 'John',
+            'href': 'http://api.com/users/john'
+          }
+        ]
+      }
+    }
+    
+    # Instantiate collection
+    users = api.get('/users') # no request yet
+    
+    users.total_entries # => 100 # request made
+    users.size # => 2, current page
+    users.each ... # iterate current page
+    users.current_page # => 1
+    users.has_next_page? # => true
+    users.next_page # => 2
+    
+    # Access entry. No request made
+    ismael = users.first
+    ismael[:name] # => 'ismael'
+    ismael[:last_name'] #=> request made to http://api.com/users/ismael
+
 
 ## Delegate to adapter
 
