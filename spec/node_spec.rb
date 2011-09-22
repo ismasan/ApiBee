@@ -86,17 +86,18 @@ describe ApiBee do
     
     before do
       @adapter = mock('Adapter')
+      @config = ApiBee.new_config
     end
     
     it 'should resolve single nodes' do
-      node = ApiBee::Node.resolve(@adapter, {:title => 'Blah', :foo => [1,2,3]})
+      node = ApiBee::Node.resolve(@adapter, @config, {:title => 'Blah', :foo => [1,2,3]})
       node[:title].should == 'Blah'
       node.adapter.should == @adapter
       node.should be_kind_of(ApiBee::Node::Single)
     end
     
     it 'should symbolize hash keys' do
-      node = ApiBee::Node.resolve(@adapter, {
+      node = ApiBee::Node.resolve(@adapter, @config, {
         'title' => 'Blah', 
         'total_entries' => 4, 
         'href' => '/products',
@@ -109,7 +110,7 @@ describe ApiBee do
     end
     
     it 'should resolve paginated lists' do
-      node = ApiBee::Node.resolve(@adapter, {:title => 'Blah', :total_entries => 4, :href => '/products'})
+      node = ApiBee::Node.resolve(@adapter, @config, {:title => 'Blah', :total_entries => 4, :href => '/products'})
       node.total_entries.should == 4
       node.adapter.should == @adapter
       node.should be_kind_of(ApiBee::Node::List)

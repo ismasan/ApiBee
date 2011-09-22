@@ -9,20 +9,21 @@ module ApiBee
       end
     end
     
-    def self.resolve(adapter, attrs, href = nil)
+    def self.resolve(adapter, config, attrs, href = nil)
       attrs = simbolized(attrs)
       keys = attrs.keys.map{|k| k.to_sym}
-      if keys.include?(:total_entries) && keys.include?(ApiBee.config.uri_property_name.to_sym) # is a paginator
-        List.new adapter, attrs, href
+      if keys.include?(config.total_entries_property_name) && keys.include?(config.uri_property_name.to_sym) # is a paginator
+        List.new adapter, config, attrs, href
       else
-        Single.new adapter, attrs, href
+        Single.new adapter, config, attrs, href
       end
     end
     
     attr_reader :adapter
     
-    def initialize(adapter, attrs, href)
+    def initialize(adapter, config, attrs, href)
       @adapter = adapter
+      @config = config
       @attributes = {}
       @href = href
       update_attributes attrs
@@ -54,7 +55,7 @@ module ApiBee
     def resolve_values_to_nodes(value)
       case value
       when ::Hash
-        Node.resolve @adapter, value
+        Node.resolve @adapter, @config, value
       when ::Array
         value.map {|v| resolve_values_to_nodes(v)} # recurse
       else
@@ -63,11 +64,11 @@ module ApiBee
     end
     
     def has_more?
-      !@complete && @attributes[ApiBee.config.uri_property_name]
+      !@complete && @attributes[@config.uri_property_name]
     end
     
     def load_more!
-      more_data = @adapter.get(@attributes[ApiBee.config.uri_property_name])
+      more_data = @adapter.get(@attributes[@config.uri_property_name])
       update_attributes Node.simbolized(more_data) if more_data
       @complete = true
     end
@@ -82,7 +83,7 @@ module ApiBee
       
       def find_one(id)
         data = @adapter.find_one(@href, id)
-        data.nil? ? nil : Node.resolve(@adapter, data, @href)
+        data.nil? ? nil : Node.resolve(@adapter, @config, data, @href)
       end
       
       def total_entries
@@ -143,14 +144,14 @@ module ApiBee
       end
       
       def paginate(options = {})
-        data = @adapter.get(@attributes[ApiBee.config.uri_property_name], options)
-        Node.resolve @adapter, data, @href
+        data = @adapter.get(@attributes[@config.uri_property_name], options)
+        Node.resolve @adapter, @config, data, @href
       end
       
       protected
       
       def __entries
-        @entries ||= (self[:entries] || [])
+        @entries ||= (self[@config.entries_property_name] || [])
       end
 
     end

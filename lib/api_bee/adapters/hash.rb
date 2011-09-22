@@ -57,7 +57,7 @@ module ApiBee
       end
       
       def is_paginated?(hash)
-        hash[ApiBee.config.uri_property_name] && hash[:total_entries]
+        hash[:href] && hash[:total_entries]
       end
       
       def paginate(list, page, per_page)

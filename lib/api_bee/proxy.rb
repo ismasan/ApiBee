@@ -4,15 +4,16 @@ module ApiBee
     
     attr_reader :adapter
     
-    def initialize(adapter, href = nil, opts = nil)
+    def initialize(adapter, config, href = nil, opts = nil)
       @adapter = adapter
+      @config = config
       @href = href
       @opts = opts
     end
     
     def get(href, opts = {})
       # Just delegate. No API calls at this point. We only load data when we need it.
-      Proxy.new @adapter, href, opts
+      Proxy.new @adapter, @config, href, opts
     end
     
     def [](key)
@@ -24,7 +25,7 @@ module ApiBee
     end
     
     def paginate(*args)
-      @list ||= Node::List.new(@adapter, {ApiBee.config.uri_property_name => @href}, @href)
+      @list ||= Node::List.new(@adapter, @config, {@config.uri_property_name => @href}, @href)
       @list.paginate *args
     end
     
@@ -37,7 +38,7 @@ module ApiBee
     def _node
       @node ||= (
         data = @adapter.get(@href, @opts)
-        Node.resolve @adapter, data, @href
+        Node.resolve @adapter, @config, data, @href
       )
     end
     

@@ -10,23 +10,6 @@ describe 'ApiBee.setup' do
     end
   end
   
-  describe 'config block' do
-    
-    it 'should have default uri_property_name field name' do
-      ApiBee.config.uri_property_name.should == :href
-    end
-    
-    it 'should set global variables' do
-      api = ApiBee.setup(:hash, {}) do |config|
-        config.foo = 11
-        config.bar = 22
-      end
-      
-      ApiBee.config.foo.should == 11
-      ApiBee.config.bar.should == 22
-    end
-  end
-  
   describe 'with custom adapter class' do
     before do
       
@@ -57,4 +40,59 @@ describe 'ApiBee.setup' do
     end
     
   end
+  
+  context 'configuration' do
+    
+    before do
+      @api1 = ApiBee.setup(:hash, {
+        :user => {
+          :name => 'ismael 1',
+          :href => '/users/ismael1'
+        }
+      })
+      
+      @api2 = ApiBee.setup(:hash, {
+        :user => {
+          :name => 'ismael 2',
+          :url => '/users/ismael2'
+        }
+      }) do |config|
+        config.uri_property_name = :url
+      end
+    end
+    
+    describe 'API config' do
+      
+      it 'should produce a config object with default values' do
+        config = ApiBee.new_config
+        config.uri_property_name.should == :href
+        config.total_entries_property_name.should == :total_entries
+        config.entries_property_name.should == :entries
+      end
+      
+      it 'should have default :href configured' do
+        user = @api1.get('/user')
+        user[:name].should == 'ismael 1'
+        @api1.adapter.should_receive(:get).with('/users/ismael1').and_return(:last_name => 'Celis')
+
+        user[:last_name].should == 'Celis'
+      end
+      
+      it 'should overwrite config for individual apis' do
+        user1 = @api1.get('/user')
+        user1[:name].should == 'ismael 1'
+        @api1.adapter.should_receive(:get).with('/users/ismael1').and_return(:last_name => 'Celis 1')
+
+        user1[:last_name].should == 'Celis 1'
+        
+        user2 = @api2.get('/user')
+        user2[:name].should == 'ismael 2'
+        @api2.adapter.should_receive(:get).with('/users/ismael2').and_return(:last_name => 'Celis 2')
+
+        user2[:last_name].should == 'Celis 2'
+      end
+
+    end
+  end
+  
 end
