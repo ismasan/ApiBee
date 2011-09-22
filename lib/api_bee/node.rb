@@ -1,5 +1,11 @@
 module ApiBee
   
+  # == API response objects
+  #
+  # A node wraps Hash data returned by adapter.get(path)
+  # It inspects the returned data and tries to add lazy-loading of missing attributes (provided there is an :href attribute)
+  # and pagination (see Node::List)
+  #
   class Node
     
     def self.simbolized(hash)
@@ -9,6 +15,19 @@ module ApiBee
       end
     end
     
+    # Factory. Inspect passed attribute hash for pagination fields and reurns one of Node::List for paginated node lists
+    # or Node::Single for single nodes
+    # A node (list or single) may contain nested lists or single nodes. This is handled transparently by calling Node.resolve
+    # when accessing nested attributes of a node.
+    #
+    # Example:
+    #
+    #   node = Node.resolve(an_adapter, config_object, {:total_entries => 10, :href => '/products', :entries => [...]})
+    #   # node is a Node::List because is has pagination fields
+    #
+    #   node = Node.resolve(an_adapter, config_object, {:name => 'Ismael', :bday => '11/29/77'})
+    #   # node is a Node::Single because it doesn't represent a paginated list
+    #
     def self.resolve(adapter, config, attrs, href = nil)
       attrs = simbolized(attrs)
       keys = attrs.keys.map{|k| k.to_sym}
@@ -33,6 +52,24 @@ module ApiBee
       @attributes
     end
     
+    # Lazy loading attribute accessor.
+    # Attempts to look for an attribute in this node's present attributes
+    # If the attribute is missing and the node has a :href attribute pointing to more data for this resource
+    # it will delegate to the adapter for more data, update it's attributes and return the found value, if any
+    #
+    # Example:
+    #
+    #   data = {
+    #     :href => '/products/6',
+    #     :title => 'Ipod'
+    #   }
+    #
+    #   node = Node.resolve(adapter, config, data)
+    #
+    #   node[:title] # => 'Ipod'. 
+    #
+    #   node[:price] # new request to /products/6
+    #
     def [](attribute_name)
       if respond_to?(attribute_name)
         send attribute_name
@@ -73,14 +110,54 @@ module ApiBee
       @complete = true
     end
     
+    # == Single node
+    #
+    # Resolved when initial data hash doesn't include pagination attributes
+    #
     class Single < Node
 
     end
-
+    
+    # == Paginated node list
+    #
+    # Resolved by Node.resolve when initial data hash contains pagination attributes :total_entries, :href and :entries
+    # Note that these are the default values for those fields and they can be configured per-API via the passed config object.
+    #
+    # A Node::List exposes methods useful for paginating a list of nodes.
+    #
+    # Example:
+    #
+    #   data = {
+    #     :total_entries => 10,
+    #     :href => '/products',
+    #     :page => 1,
+    #     :per_page => 20,
+    #     :entries => [
+    #        {
+    #          :title => 'Ipod'
+    #        },
+    #        {
+    #          :title => 'Ipad'
+    #        },
+    #        ...
+    #      ]
+    #   }
+    #
+    #   list = Node.resolve(adapter, config, data)
+    #   list.current_page # => 1
+    #   list.has_next_page? # => true
+    #   list.next_page # => 2
+    #   list.size # => 20
+    #   list.each ... # iterate current page
+    #   list.first #=> an instance of Node::Single
+    #
     class List < Node
       
       DEFAULT_PER_PAGE = 100
       
+      # Get one resource from this list
+      # Delegates to adapter.get_one(href, id) and resolves result.
+      #
       def get_one(id)
         data = @adapter.get_one(@href, id)
         data.nil? ? nil : Node.resolve(@adapter, @config, data, @href)
