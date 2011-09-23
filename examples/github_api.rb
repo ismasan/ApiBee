@@ -27,14 +27,12 @@ class GithubAdapter
     
     if response.kind_of?(Net::HTTPOK)
       results = JSON.parse response.body
-      results = if results.is_a?(Array)
+      if results.is_a?(Array)
         # decorate returned array so it complies with APiBee's pagination params
         paginate results, options, path, response
       else
         results
       end
-      
-      results
     else
       nil
     end
