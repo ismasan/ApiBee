@@ -9,6 +9,10 @@ require 'json'
 #
 class GithubAdapter
   
+  def self.config_api_bee(config)
+    config.uri_property_name = :url
+  end
+  
   def initialize
     @url = URI.parse('https://api.github.com')
     @http = Net::HTTP.new(@url.host, @url.port)
@@ -78,9 +82,7 @@ end
 
 ## Instantiate your wrapped API
 
-api = ApiBee.setup(GithubAdapter) do |config|
-  config.uri_property_name = :url
-end
+api = ApiBee.setup(GithubAdapter)
 
 repos = api.get('/users/ismasan/repos')
 
