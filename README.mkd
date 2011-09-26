@@ -128,6 +128,34 @@ ismael[:name] # => 'ismael'
 ismael[:last_name'] #=> request made to http://api.com/users/ismael
 ```
 
+## Per instance configuration
+
+You can configure some variables on a per-instance basis. To configure the attribute name used to access a resource's URL (defaults to :href):
+
+```ruby
+api = ApiBee.setup(MyCustomAdapter) do |config|
+  config.uri_property_name = :uri # use :uri instead
+end
+```
+
+## Adapter-wide configuration
+
+You can declare configuration in the adapter definition itself, too. Just define the config_api_bee class method in your adapter:
+
+```ruby
+class MyCustomAdapter
+  
+  def get(path, options)
+    # ...
+  end
+  
+  def self.config_api_bee(config)
+    config.uri_property_name = :uri
+  end
+end
+
+api = ApiBee.setup(MyCustomAdapter) # instance is configured correctly
+```
 
 ## Delegate to adapter
 

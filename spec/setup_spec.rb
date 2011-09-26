@@ -41,7 +41,47 @@ describe 'ApiBee.setup' do
     
   end
   
-  context 'configuration' do
+  describe 'global adapter configuration' do
+    
+    before do
+      require 'api_bee/adapters/hash'
+      @adapter_klass = Class.new(ApiBee::Adapters::Hash) do
+        
+        def self.config_api_bee(config)
+          config.expose :fetch
+          config.uri_property_name = :uri
+        end
+        
+        def fetch(*args)
+          @data.fetch *args
+        end
+        
+      end
+      
+      @api = ApiBee.setup(@adapter_klass, {
+        :user => {
+          :name => 'ismael 1',
+          :uri => '/users/ismael1'
+        }
+      })
+    end
+    
+    it 'should have configure defaults for all instances of adapter' do
+      user = @api.get('/user')
+      user[:name].should == 'ismael 1'
+      @api.adapter.should_receive(:get).with('/users/ismael1').and_return(:last_name => 'Celis')
+
+      user[:last_name].should == 'Celis'
+    end
+    
+    it 'should delegate configured methods to adapter' do
+      @api.fetch(:user, 'foo').should == {:name => 'ismael 1', :uri => '/users/ismael1'}
+      @api.fetch(:blah, 'foo').should == 'foo'
+    end
+    
+  end
+  
+  context 'per-instance configuration' do
     
     before do
       @api1 = ApiBee.setup(:hash, {

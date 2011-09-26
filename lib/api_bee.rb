@@ -33,18 +33,21 @@ module ApiBee
     #
     def setup(adapter_klass, *args)
       
-      adapter = if adapter_klass.is_a?(::Symbol)
+      adapter_klass = (
         require File.join('api_bee', 'adapters', adapter_klass.to_s)
         klass = adapter_klass.to_s.gsub(/(^.{1})/){$1.upcase}
-        Adapters.const_get(klass).new(*args)
-      else
-        adapter_klass.new *args
-      end
-
-      raise NoMethodError, "Adapter must implement #get(path, *args) method" unless adapter.respond_to?(:get)
+        Adapters.const_get(klass)
+      ) if adapter_klass.is_a?(Symbol)
       
       config = new_config
+      # If adapter-wide config method
+      adapter_klass.config_api_bee(config) if adapter_klass.respond_to?(:config_api_bee)
+      # If config block passed per api instance
       yield config if block_given?
+      
+      adapter = adapter_klass.new(*args)
+      raise NoMethodError, "Adapter must implement #get(path, *args) method" unless adapter.respond_to?(:get)
+      
       Proxy.new adapter, config
     end
     
