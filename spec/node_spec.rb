@@ -235,6 +235,19 @@ describe ApiBee do
         @products.last[:title].should == 'Foo 2'
       end
       
+      it 'should implement #map' do
+        @products.map {|p| p[:title]}.should == ['Foo 1', 'Foo 2']
+      end
+      
+      it 'should implement #each_with_index' do
+        idx = []
+        titles = []
+        @products.each_with_index {|p,i| idx << i; titles << p[:title]}
+        
+        idx.should == [0,1]
+        titles.should == ['Foo 1', 'Foo 2']
+      end
+      
       it 'should navigate to the second page' do
         @products = @products.paginate(:page => 2, :per_page => 2)
         titles = []

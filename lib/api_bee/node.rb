@@ -71,9 +71,7 @@ module ApiBee
     #   node[:price] # new request to /products/6
     #
     def [](attribute_name)
-      if respond_to?(attribute_name)
-        send attribute_name
-      elsif value = @attributes[attribute_name]
+      if value = @attributes[attribute_name]
         resolve_values_to_nodes value
       elsif has_more? # check whether there's more info in API
         load_more!
@@ -153,6 +151,8 @@ module ApiBee
     #
     class List < Node
       
+      include Enumerable
+      
       DEFAULT_PER_PAGE = 100
       
       # Get one resource from this list
@@ -214,10 +214,6 @@ module ApiBee
       
       def each(&block)
         __entries.each(&block)
-      end
-      
-      def each_with_index(&block)
-        __entries.each_with_index(&block)
       end
       
       def paginate(options = {})
