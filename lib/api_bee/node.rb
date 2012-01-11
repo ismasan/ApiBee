@@ -81,6 +81,10 @@ module ApiBee
       end
     end
     
+    def []=(key, value)
+      @attributes[key.to_sym] = value
+    end
+    
     protected
     
     def update_attributes(attrs)

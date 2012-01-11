@@ -117,6 +117,20 @@ describe ApiBee do
     end
   end
   
+  describe '#[]=' do
+    
+    before do
+      @adapter = mock('Adapter')
+      @config = ApiBee.new_config
+    end
+    
+    it 'should set attributes in nodes' do
+      node = ApiBee::Node.resolve(@adapter, @config, {:title => 'Blah', :total_entries => 4, :href => '/products'})    
+      node[:foo] = 11
+      node[:foo].should == 11
+    end
+  end
+  
   context 'lazy loading' do
     before do
       require 'api_bee/adapters/hash'
