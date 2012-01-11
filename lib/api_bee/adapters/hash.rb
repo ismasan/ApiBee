@@ -49,7 +49,7 @@ module ApiBee
       
       def handle_array_data(array, key)
         if array[0].kind_of?(::Hash)
-          array.find {|e| e[:id] == key}
+          array.find {|e| e[:id].to_s == key}
         else
           array
         end
