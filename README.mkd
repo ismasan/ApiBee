@@ -18,25 +18,27 @@ A single resource might look like:
 ```
 A resource collection looks like:
 
+```javascript
+{
+  'href': 'http://api.myservice.com/resources',
+  'total_entries': 100,
+  'page': 1,
+  'per_page': 10,
+  'entries': [
     {
-      'href': 'http://api.myservice.com/resources',
-      'total_entries': 100,
-      'page': 1,
-      'per_page': 10,
-      'entries': [
-        {
-          'name':        'Foo',
-          'description': 'foo resoruce',
-          'href':         'http://api.myservice.com/resources/foo'
-        },
-        {
-          'name':        'Bar',
-          'description': 'bar resoruce',
-          'href':        'http://api.myservice.com/resources/bar'
-        },
-        ...
-      ]
-    }
+      'name':        'Foo',
+      'description': 'foo resoruce',
+      'href':         'http://api.myservice.com/resources/foo'
+    },
+    {
+      'name':        'Bar',
+      'description': 'bar resoruce',
+      'href':        'http://api.myservice.com/resources/bar'
+    },
+    ...
+  ]
+}
+```
     
 Collection resources must include the fields 'href', 'total_entries', 'page', 'per_page' and 'entries'. This allows clients to paginate and fetch more pages.
 
@@ -72,14 +74,16 @@ end
 
 If an object in a response has a 'href' attribute, it will be used to fetch more data if you ask for an attribute currently not in the object.
 
-    # JSON Dataset
-    {
-      'user': {
-        'name': 'Ismael',
-        'href': 'http://api.com/users/ismael'
-      }
-    }
-    
+```javascript
+/* JSON Dataset */
+{
+  'user': {
+    'name': 'Ismael',
+    'href': 'http://api.com/users/ismael'
+  }
+}
+```
+
 ```ruby
 # Instantiate object
 user = api.get('/user')
@@ -91,26 +95,27 @@ user[:last_name]
     
 This works for objects in collections too.
 
-    # JSON collection
-    {
-      'users': {
-        'total_entries': 100,
-        'page': 1,
-        'per_page': 2,
-        'href': 'http://api.com/users',
-        'entries': [
-          {
-            'name': 'Ismael',
-            'href': 'http://api.com/users/ismael'
-          },
-          {
-            'name': 'John',
-            'href': 'http://api.com/users/john'
-          }
-        ]
+```javascript
+/* JSON collection */
+{
+  'users': {
+    'total_entries': 100,
+    'page': 1,
+    'per_page': 2,
+    'href': 'http://api.com/users',
+    'entries': [
+      {
+        'name': 'Ismael',
+        'href': 'http://api.com/users/ismael'
+      },
+      {
+        'name': 'John',
+        'href': 'http://api.com/users/john'
       }
-    }
-
+    ]
+  }
+}
+```
  
 ```ruby
 # Instantiate collection
@@ -198,24 +203,17 @@ end
 
 ApiBee ships with an in-memory Hash adapter so it can be use with test/local data (for example a YAML file).
 
-
 ```ruby
-api = ApiBee.setup(:hash, YAML.load_file('./my_data.yml'))
-    
+api = ApiBee.setup(:hash, YAML.load_file('./my_data.yml'))    
+
 products = api.get('/products') # => ApiBee::Node::List
-    
-products.first # => ApiBee::Node::Single
-    
+
+products.first # => ApiBee::Node::Single    
 products.each() # iterate current page
-    
 products.current_page # => 1
-    
 products.paginate(:page => 2, :per_page => 4) # => ApiBee::Node::List # Next page
-    
 products.has_next_page? # => false
-    
 products.has_prev_page? # => true
-    
 products.prev_page # => 1
 ``` 
 
