@@ -9,12 +9,13 @@ These APIs must
 
 A single resource might look like:
 
-    {
-      'name':        'Foo',
-      'description': 'foo resoruce',
-      'href':        'http://api.myservice.com/resources/foo'
-    }
-    
+```javascript
+{
+  'name':        'Foo',
+  'description': 'foo resoruce',
+  'href':        'http://api.myservice.com/resources/foo'
+}
+```
 A resource collection looks like:
 
     {
