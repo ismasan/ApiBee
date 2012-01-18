@@ -6,8 +6,11 @@ module ApiBee
       
       attr_reader :data
       
-      def initialize(*args)
-        @data = args.last
+      def initialize(data, args = {})
+        @data = data
+        @config = {
+          :uid_field => :id
+        }.merge(args)
       end
       
       def get(href, opts = {})
@@ -49,7 +52,7 @@ module ApiBee
       
       def handle_array_data(array, key)
         if array[0].kind_of?(::Hash)
-          array.find {|e| e[:id].to_s == key}
+          array.find {|e| e[@config[:uid_field]].to_s == key}
         else
           array
         end

@@ -56,6 +56,19 @@ describe ApiBee::Adapters::Hash do
     end
   end
   
+  context 'custom item identifier' do
+    before do
+      @data[:collections].first[:uid] = 'xxx123'
+      @uid_adapter        = ApiBee::Adapters::Hash.new(@data, :uid_field => :uid)
+    end
+    
+    it 'should find by custom field name' do
+      collection = @uid_adapter.get('/collections/xxx123')
+      collection[:title].should == 'Catalog'
+      collection[:id].should == 'catalog'
+    end
+  end
+  
   context 'accessing single nodes' do
     
     before do
