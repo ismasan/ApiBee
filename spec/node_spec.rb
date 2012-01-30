@@ -117,6 +117,37 @@ describe ApiBee do
     end
   end
   
+  describe 'with custom wrapper class' do
+    
+    before do
+      @adapter = mock('Adapter')
+      @config = ApiBee.new_config
+      
+      @wrapper = Class.new do
+        def initialize(node)
+          @node = node
+        end
+        
+        def foos
+          @node[:foos]
+        end
+      end
+      
+      @config.node_wrapper = @wrapper
+      
+      @node = ApiBee::Node.resolve(@adapter, @config, {:title => 'Blah', :foos => [1,2,3]})
+      
+    end
+    
+    it 'should be an instance of wrapper class' do
+      @node.should be_kind_of(@wrapper)
+    end
+    
+    it 'should have methods defined in wrapper class' do
+      @node.foos.should == [1,2,3]
+    end
+  end
+  
   describe '#[]=' do
     
     before do

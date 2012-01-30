@@ -34,7 +34,9 @@ module ApiBee
       if keys.include?(config.total_entries_property_name) && keys.include?(config.uri_property_name.to_sym) # is a paginator
         List.new adapter, config, attrs, href
       else
-        Single.new adapter, config, attrs, href
+        node = Single.new adapter, config, attrs, href
+        node = config.node_wrapper.new node if config.node_wrapper    
+        node      
       end
     end
     
