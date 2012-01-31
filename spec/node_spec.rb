@@ -148,17 +148,27 @@ describe ApiBee do
     end
   end
   
-  describe '#[]=' do
+  context 'hash methods' do
     
     before do
       @adapter = mock('Adapter')
       @config = ApiBee.new_config
+      @node = ApiBee::Node.resolve(@adapter, @config, {:title => 'Blah', :total_entries => 4, :href => '/products', :empty_field => nil})
     end
     
-    it 'should set attributes in nodes' do
-      node = ApiBee::Node.resolve(@adapter, @config, {:title => 'Blah', :total_entries => 4, :href => '/products'})    
-      node[:foo] = 11
-      node[:foo].should == 11
+    describe '#[]=' do
+      it 'should set attributes in nodes' do 
+        @node[:foo] = 11
+        @node[:foo].should == 11
+      end
+    end
+    
+    describe '#has_key?' do
+      it 'should delegate to attributes' do
+        @node.has_key?(:title).should be_true
+        @node.has_key?(:foobar).should be_false
+        @node.has_key?(:empty_field).should be_true
+      end
     end
   end
   
