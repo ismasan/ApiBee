@@ -180,10 +180,10 @@ api.post('/products', :title => 'Foo', :price => 100.0)
 ```
 
 ## Wrapping nodes
-You can wrap nodes in collections in your custom classes.
+You can wrap nodes in collections in your custom classes. If your adapter defines a `#wrap` method, it will be passed each single node in your data.
 
 ```ruby
-class Wrapper
+class ProductWrapper
   def initialize(node)
     @node = node
   end
@@ -193,11 +193,26 @@ class Wrapper
   end
 end
 
-api = ApiBee.setup(MyCustomAdapter) do |config|
-  config.node_wrapper = Wrapper
+class MyCustomAdapter
+  
+  def get(*args)
+    # ...
+  end
+  
+  # Wrap product objects
+  def wrap(node, name)
+    if name =~ /product/
+      ProductWrapper.new node
+    else
+      node
+    end
+  end
+  
 end
 
-object = api.get('/products').first #=> an instance of Wrapper
+api = ApiBee.setup(MyCustomAdapter)
+
+object = api.get('/products').first #=> an instance of ProductWrapper
 
 object.name # => delegates to ApiBee::Node::Single#[]
 ````
