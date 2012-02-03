@@ -9,8 +9,30 @@ require 'json'
 #
 class GithubAdapter
   
+  class Owner
+    def initialize(node)
+      @node = node
+    end
+    
+    def login
+      @node[:login]
+    end
+    
+    def public_repos
+      @node[:public_repos]
+    end
+  end
+  
   def self.config_api_bee(config)
     config.uri_property_name = :url
+  end
+  
+  def wrap(node, name)
+    if name =~ /owner/
+      Owner.new(node)
+    else
+      node
+    end
   end
   
   def initialize
@@ -33,6 +55,7 @@ class GithubAdapter
       results = JSON.parse response.body
       if results.is_a?(Array)
         # decorate returned array so it complies with APiBee's pagination params
+        # p results
         paginate results, options, path, response
       else
         results
@@ -113,4 +136,4 @@ one = repos.get_one('https://api.github.com/repos/ismasan/websockets_examples')
 
 # one[:owner][:public_repos] will trigger a new request to the resource URL because that property is not available in the excerpt
 #
-puts "An owner is #{one[:owner][:login]}, who has #{one[:owner][:public_repos]} public repos"
+puts "An owner is #{one[:owner].login}, who has #{one[:owner].public_repos} public repos"
