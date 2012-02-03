@@ -122,7 +122,7 @@ describe ApiBee do
     before do
       @adapter = mock('Adapter')
       @config = ApiBee.new_config
-      @node = ApiBee::Node.resolve(@adapter, @config, {:title => 'Blah', :total_entries => 4, :href => '/products', :empty_field => nil})
+      @node = ApiBee::Node.resolve(@adapter, @config, {:title => 'Blah', :href => '/products/1', :empty_field => nil})
     end
     
     describe '#[]=' do
@@ -133,10 +133,23 @@ describe ApiBee do
     end
     
     describe '#has_key?' do
-      it 'should delegate to attributes' do
+      it 'should delegate to local attributes' do
+        @adapter.should_not_receive(:get)
         @node.has_key?(:title).should be_true
-        @node.has_key?(:foobar).should be_false
+      end
+      
+      it 'should fetch from :href if available' do
+        @adapter.should_receive(:get).with('/products/1').and_return(:age => 2)
+        @node.has_key?(:age).should be_true
+      end
+      
+      it 'should return true for nil value' do
         @node.has_key?(:empty_field).should be_true
+      end
+      
+      it 'should return false for missing keys' do
+        @adapter.should_receive(:get).with('/products/1').and_return(:age => 2)
+        @node.has_key?(:missing_field).should be_false
       end
     end
   end

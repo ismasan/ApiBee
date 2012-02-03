@@ -88,6 +88,8 @@ module ApiBee
     end
     
     def has_key?(key)
+      return true if @attributes.has_key? key
+      load_more! if has_more?
       @attributes.has_key? key
     end
     
