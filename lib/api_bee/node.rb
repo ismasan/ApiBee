@@ -28,14 +28,14 @@ module ApiBee
     #   node = Node.resolve(an_adapter, config_object, {:name => 'Ismael', :bday => '11/29/77'})
     #   # node is a Node::Single because it doesn't represent a paginated list
     #
-    def self.resolve(adapter, config, attrs, href = nil)
+    def self.resolve(adapter, config, attrs, attribute_name = nil)
       attrs = simbolized(attrs)
       keys = attrs.keys.map{|k| k.to_sym}
       if keys.include?(config.total_entries_property_name) && keys.include?(config.uri_property_name.to_sym) # is a paginator
-        List.new adapter, config, attrs, href
+        List.new adapter, config, attrs, attribute_name
       else
-        node = Single.new adapter, config, attrs, href
-        node = config.node_wrapper.new node if config.node_wrapper    
+        node = Single.new adapter, config, attrs, attribute_name
+        node = adapter.wrap(node, attribute_name) if adapter.respond_to?(:wrap)
         node      
       end
     end
@@ -74,7 +74,7 @@ module ApiBee
     #
     def [](attribute_name)
       if value = @attributes[attribute_name]
-        resolve_values_to_nodes value
+        resolve_values_to_nodes value, attribute_name
       elsif has_more? # check whether there's more info in API
         load_more!
         self[attribute_name] # recurse once
@@ -97,12 +97,12 @@ module ApiBee
       @attributes.merge!(attrs)
     end
     
-    def resolve_values_to_nodes(value)
+    def resolve_values_to_nodes(value, attribute_name)
       case value
       when ::Hash
-        Node.resolve @adapter, @config, value
+        Node.resolve @adapter, @config, value, attribute_name
       when ::Array
-        value.map {|v| resolve_values_to_nodes(v)} # recurse
+        value.map {|v| resolve_values_to_nodes(v, attribute_name)} # recurse
       else
         value
       end
@@ -234,7 +234,11 @@ module ApiBee
       protected
       
       def __entries
-        @entries ||= (self[@config.entries_property_name] || [])
+        @entries ||= begin
+          (@attributes[@config.entries_property_name] || []).map do |entry|
+            resolve_values_to_nodes entry, @href
+          end
+        end
       end
 
     end

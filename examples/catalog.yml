@@ -6,26 +6,38 @@
       :title: P1
       :id: p1
       :price: 100
+      :category:
+        :name: music players
     -
       :title: P2
       :id: p2
       :price: 200 
+      :category:
+        :name: ijdeiwejdneidjn
     -
       :title: P3
       :id: p3
       :price: 300
+      :category:
+        :name: music players
     -
       :title: P4
       :id: p4
       :price: 400
+      :category:
+        :name: music players
     -
       :title: P5
       :id: p5
       :price: 500
+      :category:
+        :name: music players
     -
       :title: P6
       :id: p6
       :price: 600
+      :category:
+        :name: music players
       
 :collections:
   :total_entries: 2
