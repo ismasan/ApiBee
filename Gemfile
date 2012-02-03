@@ -5,5 +5,6 @@ gemspec
 
 group :test do
   gem 'rspec' # dev, test
+  gem 'rake'
 end
 
