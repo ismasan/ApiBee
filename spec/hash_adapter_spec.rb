@@ -95,6 +95,7 @@ describe ApiBee::Adapters::Hash do
     end
     
     describe 'paginating' do
+      # Paginating twice in same case to make sure data is not being omdified
       it 'should paginate paginated collections' do
         products = @adapter.get('/collections/catalog/products', :page => 2, :per_page => 2)
         products[:page].should == 2
@@ -103,6 +104,13 @@ describe ApiBee::Adapters::Hash do
         products[:entries].size.should == 2
         products[:entries][0][:title].should == 'Foo 3'
         products[:entries][1][:title].should == 'Foo 4'
+
+        products = @adapter.get('/collections/catalog/products', :page => 3, :per_page => 2)
+        products[:page].should == 3
+        products[:total_entries].should == 5
+        products[:per_page].should == 2
+        products[:entries].size.should == 1
+        products[:entries][0][:title].should == 'Foo 5'
       end
       
       it 'should paginate last page correctly' do

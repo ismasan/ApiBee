@@ -15,7 +15,7 @@ module ApiBee
       
       def get(href, opts = {})
         segments = parse_href(href)
-        segments.inject(data) do |mem,i|
+        segments.inject(deep_clone_of(data)) do |mem,i|
           case mem
           when ::Hash
             handle_hash_data mem, i, opts
@@ -32,6 +32,13 @@ module ApiBee
       end
       
       protected
+      
+      # We don't want to modify the in-memory version of base data, and Ruby's Object.dup makes shallow copies only
+      # This is not the most efficient method, but the Hash adapter is for tests only anyway.
+      #
+      def deep_clone_of(hash)
+        Marshal::load(Marshal.dump(hash))
+      end
       
       def parse_href(href)
         href.gsub(/^\//, '').split('/')
